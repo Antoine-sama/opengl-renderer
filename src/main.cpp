@@ -69,6 +69,7 @@ int main() {
     Shader myShader(ASSETS_DIR "shaders/shader.vert", ASSETS_DIR "shaders/lighting.frag");
     Model myModel(ASSETS_DIR "models/backpack/backpack.obj");
     Model floor(ASSETS_DIR "models/floor/floor.obj");
+    Model torch(ASSETS_DIR "models/torch/torch.obj");
 
     int numberFrame = 0;
     float timeFrame = 0.0f;
@@ -99,22 +100,28 @@ int main() {
         myShader.setVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
         myShader.setVec3("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
         myShader.setVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
-        // point light 1
-        myShader.setVec3("pointLights[0].position", glm::vec3( 0.7f,  0.2f,  2.0f));
-        myShader.setVec3("pointLights[0].ambient", 0.05f, 0.05f, 0.05f);
-        myShader.setVec3("pointLights[0].diffuse", 0.8f, 0.8f, 0.8f);
+        // point light 1 (torch)
+        float emissionStrength = (3.5 + sin(currentFrame * 2)) * 0.25f;
+        float torchIntensity = 1.6f;
+        auto baseTorchDiffuse = glm::vec3(1.0f, 0.75f, 0.4f) * torchIntensity;
+        float flicker = 1.0f + 0.15f * sin(currentFrame * 6.0f) + 0.05f * sin(currentFrame * 13.0f);
+        auto torchLightPos = glm::vec3(-3.0f, 0.5f, 2.0f);
+        myShader.setVec3("pointLights[0].position", torchLightPos);
+        myShader.setVec3("pointLights[0].ambient", 0.1f, 0.1f, 0.1f);
+        myShader.setVec3("pointLights[0].diffuse", baseTorchDiffuse * flicker);
         myShader.setVec3("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
         myShader.setFloat("pointLights[0].constant", 1.0f);
         myShader.setFloat("pointLights[0].linear", 0.09f);
         myShader.setFloat("pointLights[0].quadratic", 0.032f);
+        // spotlight (disabled for now)
         myShader.setVec3("spotLight.position", camera.Position);
         myShader.setVec3("spotLight.direction", camera.Front);
         myShader.setVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
         myShader.setVec3("spotLight.diffuse", 1.0f, 1.0f, 1.0f);
         myShader.setVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
         myShader.setFloat("spotLight.constant", 1.0f);
-        myShader.setFloat("spotLight.linear", 0.09f);
-        myShader.setFloat("spotLight.quadratic", 0.032f);
+        myShader.setFloat("spotLight.linear", 0.045f);
+        myShader.setFloat("spotLight.quadratic", 0.0075f);
         myShader.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
         myShader.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));  
 
@@ -127,13 +134,24 @@ int main() {
         model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
         model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
         myShader.setMat4("model", model);
+        myShader.setFloat("uEmissionStrength", 0.0f);
         myModel.Draw(myShader);
 
+        model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f, -2.0f, 0.0f));
-        model = glm::scale(model, glm::vec3(0.5f));
+        model = glm::scale(model, glm::vec3(0.4f));
         model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         myShader.setMat4("model", model);
+        myShader.setFloat("uEmissionStrength", 0.0f);
         floor.Draw(myShader);
+
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(-3.0f, -.5f, 2.0f));
+        model = glm::scale(model, glm::vec3(0.5f));
+        model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+        myShader.setMat4("model", model);
+        myShader.setFloat("uEmissionStrength", emissionStrength);
+        torch.Draw(myShader);
 
         numberFrame++;
 

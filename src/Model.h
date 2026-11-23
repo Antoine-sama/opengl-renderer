@@ -105,6 +105,9 @@ private:
             // 4. height maps
             std::vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
             textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
+            // 5. emissive maps
+            std::vector<Texture> emissionMaps = loadMaterialTextures(material, aiTextureType_EMISSIVE, "texture_emission");
+            textures.insert(textures.end(), emissionMaps.begin(), emissionMaps.end());
         }
         return Mesh(vertices, indices, textures);
     }
