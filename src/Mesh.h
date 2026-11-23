@@ -6,6 +6,8 @@
 #define OPENGLTRAINING_MESH_H
 #include <glm/vec3.hpp>
 #include <utility>
+#include <string>
+#include <vector>
 
 #include "Shader.h"
 
