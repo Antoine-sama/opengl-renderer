@@ -24,6 +24,7 @@ static float mixValue = 0.4f;
 // Camera setup
 static Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 static bool firstMouse = true;
+static bool spedUp = false;
 static float lastX = SCR_WIDTH / 2, lastY = SCR_HEIGHT / 2;
 
 // Timing value
@@ -67,6 +68,7 @@ int main() {
 
     Shader myShader(ASSETS_DIR "shaders/shader.vert", ASSETS_DIR "shaders/lighting.frag");
     Model myModel(ASSETS_DIR "models/backpack/backpack.obj");
+    Model floor(ASSETS_DIR "models/floor/floor.obj");
 
     int numberFrame = 0;
     float timeFrame = 0.0f;
@@ -88,16 +90,10 @@ int main() {
 
         // Rendering pipeline.
         myShader.use();
-        // be sure to activate shader when setting uniforms/drawing objects
         myShader.setVec3("viewPos", camera.Position);
         myShader.setFloat("material.shininess", 32.0f);
 
-        /*
-           Here we set all the uniforms for the 5/6 types of lights we have. We have to set them manually and index
-           the proper PointLight struct in the array to set each uniform variable. This can be done more code-friendly
-           by defining light types as classes and set their values in there, or by using a more efficient uniform approach
-           by using 'Uniform buffer objects', but that is something we'll discuss in the 'Advanced GLSL' tutorial.
-        */
+        // lights setup (boring stuff alr)
         // directional light
         myShader.setVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
         myShader.setVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
@@ -132,6 +128,13 @@ int main() {
         model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
         myShader.setMat4("model", model);
         myModel.Draw(myShader);
+
+        model = glm::translate(model, glm::vec3(0.0f, -2.0f, 0.0f));
+        model = glm::scale(model, glm::vec3(0.5f));
+        model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        myShader.setMat4("model", model);
+        floor.Draw(myShader);
+
         numberFrame++;
 
         if (timeFrame >= 1.0f) {
@@ -158,6 +161,7 @@ void processInput(GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
     }
+    spedUp = (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS);
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
         mixValue = std::clamp(mixValue + 0.005f, 0.0f, 1.0f);
     }
@@ -165,13 +169,17 @@ void processInput(GLFWwindow* window) {
         mixValue = std::clamp(mixValue - 0.005f, 0.0f, 1.0f);
     }
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.ProcessKeyboard(FORWARD, deltaTime);
+        camera.ProcessKeyboard(FORWARD, deltaTime, spedUp);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.ProcessKeyboard(BACKWARD, deltaTime);
+        camera.ProcessKeyboard(BACKWARD, deltaTime, spedUp);
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.ProcessKeyboard(LEFT, deltaTime);
+        camera.ProcessKeyboard(LEFT, deltaTime, spedUp);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.ProcessKeyboard(RIGHT, deltaTime);
+        camera.ProcessKeyboard(RIGHT, deltaTime, spedUp);
+    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+        camera.ProcessKeyboard(DOWN, deltaTime, spedUp);
+    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+        camera.ProcessKeyboard(UP, deltaTime, spedUp);
 }
 
 void mouse_callback(GLFWwindow *window, double xpos, double ypos) {

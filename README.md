@@ -1,17 +1,13 @@
 # opengl-renderer
 
-A personal OpenGL rendering project, written in C++20 while learning real-time graphics. It opens a window with GLFW and renders 3D models loaded with Assimp.
-
-All dependencies are downloaded and built automatically by CMake: you only need a C++ compiler, CMake and Git.
+A personal OpenGL rendering project, written in C++20 while following the tutorials on learnopengl.com. It opens a window with GLFW and renders 3D models loaded with Assimp.
 
 ## Requirements
 
-- A C++20 compiler (Apple Clang, MSVC, GCC or Clang)
+- A C++20 compiler
 - [CMake](https://cmake.org/download/) 3.20 or newer
 - [Git](https://git-scm.com/)
 - An internet connection for the first configuration (dependencies are fetched from GitHub)
-
-**Tested on:** macOS (Apple Silicon). Windows and Linux should work but have not been tested yet.
 
 ## Build and run
 
@@ -84,7 +80,6 @@ The project is a standard CMake project, so you can open the folder directly in 
 ## Notes
 
 - **Assets path:** the path to the `assets/` folder is written into the executable at compile time. The program therefore works from any directory, but the repository folder must stay where it was when you built it. If you move the repository, re-run CMake and rebuild.
-- **OpenGL on macOS:** Apple deprecated OpenGL and stopped at version 4.1, so only features up to OpenGL 4.1 are available there.
 
 ## Dependencies
 
@@ -97,9 +92,3 @@ The project is a standard CMake project, so you can open the folder directly in 
 | [stb_image](https://github.com/nothings/stb) | Image loading | Included in `external/stb` |
 
 To load other model formats, enable the matching importer (`ASSIMP_BUILD_<FORMAT>_IMPORTER`) in `CMakeLists.txt`.
-
-## Troubleshooting
-
-- **Shaders or models cannot be read at launch:** the repository folder was probably moved after the build. Re-run CMake and rebuild.
-- **CMake cannot find glad:** make sure `external/glad/src/glad.c` exists.
-- **GLFW fails to build on Linux:** install the X11 and Wayland development packages listed above.

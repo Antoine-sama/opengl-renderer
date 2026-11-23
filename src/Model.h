@@ -10,7 +10,8 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <glm/vec2.hpp>
-
+#include <string>
+#include <vector>
 #include "../external/stb/stb_image.h"
 
 unsigned int TextureFromFile(const char *path, const std::string &directory, bool gamma = false);
@@ -136,7 +137,7 @@ private:
     }
 };
 
-unsigned int TextureFromFile(const char *path, const std::string &directory, bool gamma) {
+inline unsigned int TextureFromFile(const char *path, const std::string &directory, bool gamma) {
     std::string filename = std::string(path);
     filename = directory + '/' + filename;
 
