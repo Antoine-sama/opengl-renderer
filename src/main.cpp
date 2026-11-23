@@ -65,7 +65,7 @@ int main() {
 
     glEnable(GL_DEPTH_TEST);
 
-    Shader myShader(ASSETS_DIR "shaders/shader.vs", ASSETS_DIR "shaders/lighting.fs");
+    Shader myShader(ASSETS_DIR "shaders/shader.vert", ASSETS_DIR "shaders/lighting.frag");
     Model myModel(ASSETS_DIR "models/backpack/backpack.obj");
 
     int numberFrame = 0;
